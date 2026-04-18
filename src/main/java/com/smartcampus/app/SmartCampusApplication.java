@@ -1,6 +1,7 @@
 package com.smartcampus.app;
 
 import com.smartcampus.resource.DiscoveryResource;
+import com.smartcampus.resource.RoomResource;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -20,7 +21,9 @@ public class SmartCampusApplication extends Application {
         Set<Class<?>> classes = new HashSet<>();
         // Day 1: Discovery endpoint
         classes.add(DiscoveryResource.class);
-        // More resource classes will be added in Days 2-5
+        // Day 2: Room management
+        classes.add(RoomResource.class);
+        // More resource classes will be added in Days 3-5
         return classes;
     }
 }
