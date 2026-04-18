@@ -2,6 +2,7 @@ package com.smartcampus.app;
 
 import com.smartcampus.resource.DiscoveryResource;
 import com.smartcampus.resource.RoomResource;
+import com.smartcampus.resource.SensorResource;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -23,7 +24,9 @@ public class SmartCampusApplication extends Application {
         classes.add(DiscoveryResource.class);
         // Day 2: Room management
         classes.add(RoomResource.class);
-        // More resource classes will be added in Days 3-5
+        // Day 3: Sensor management
+        classes.add(SensorResource.class);
+        // More resource classes will be added in Days 4-5
         return classes;
     }
 }
