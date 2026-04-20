@@ -37,37 +37,45 @@ The Smart Campus API is a RESTful web service built using the JAX-RS (Jersey) fr
 
 - **Java JDK 11+** (tested with JDK 17)
 - **Apache Maven 3.9+**
-- **Apache Tomcat 9** (download from https://tomcat.apache.org/download-90.cgi)
 
-### Step-by-Step Instructions
+### Option A: Run directly with Maven (Easiest)
+The project includes the Jetty Maven plugin. You can start the server entirely from the command line without installing Tomcat manually.
 
-**Step 1: Clone the repository**
 ```bash
+# 1. Clone and enter directory
 git clone https://github.com/Damsath1017/Smart_Campus_API.git
 cd Smart_Campus_API
+
+# 2. Start the server (runs on port 8080)
+mvn jetty:run
 ```
 
-**Step 2: Build the WAR file**
+### Option B: Run in NetBeans IDE
+If you use NetBeans to manage your coursework:
+
+1. Open NetBeans -> **File -> Open Project** -> Select `Smart_Campus_API`.
+2. Ensure you have a server configured (e.g., Apache Tomcat) in **Services -> Servers**.
+3. Right-click the project -> **Run**.
+4. The project is pre-configured with `META-INF/context.xml` to deploy automatically to the root path (`/`).
+
+### Option C: Deploy externally to Apache Tomcat
+If you have a standalone Apache Tomcat 9 installation:
+
 ```bash
+# 1. Build the WAR file (outputs target/ROOT.war)
 mvn clean package
-```
-This produces `target/SmartCampusAPI.war`.
 
-**Step 3: Deploy to Tomcat**
-```bash
-# Copy the WAR file to Tomcat's webapps directory
-copy target\SmartCampusAPI.war C:\tomcat\webapps\
-```
+# 2. Copy to Tomcat's webapps folder
+copy target\ROOT.war C:\tomcat\webapps\
 
-**Step 4: Start Tomcat**
-```bash
+# 3. Start Tomcat
 C:\tomcat\bin\startup.bat
 ```
 
-**Step 5: Verify the API is running**
-Open a browser or use curl:
+### Verify the API is running
+Open a browser or use curl (regardless of the option you chose):
 ```bash
-curl http://localhost:8080/SmartCampusAPI/api/v1
+curl http://localhost:8080/api/v1
 ```
 
 You should see a JSON response with API metadata and resource links.
@@ -78,58 +86,58 @@ You should see a JSON response with API metadata and resource links.
 
 ### 3.1 Discovery Endpoint
 ```bash
-curl -X GET http://localhost:8080/SmartCampusAPI/api/v1
+curl -X GET http://localhost:8080/api/v1
 ```
 
 ### 3.2 Get All Rooms
 ```bash
-curl -X GET http://localhost:8080/SmartCampusAPI/api/v1/rooms
+curl -X GET http://localhost:8080/api/v1/rooms
 ```
 
 ### 3.3 Create a New Room
 ```bash
-curl -X POST http://localhost:8080/SmartCampusAPI/api/v1/rooms \
+curl -X POST http://localhost:8080/api/v1/rooms \
   -H "Content-Type: application/json" \
   -d "{\"id\": \"SCI-202\", \"name\": \"Science Lab 202\", \"capacity\": 40}"
 ```
 
 ### 3.4 Get a Specific Room
 ```bash
-curl -X GET http://localhost:8080/SmartCampusAPI/api/v1/rooms/LIB-301
+curl -X GET http://localhost:8080/api/v1/rooms/LIB-301
 ```
 
 ### 3.5 Register a New Sensor (with room validation)
 ```bash
-curl -X POST http://localhost:8080/SmartCampusAPI/api/v1/sensors \
+curl -X POST http://localhost:8080/api/v1/sensors \
   -H "Content-Type: application/json" \
   -d "{\"id\": \"TEMP-005\", \"type\": \"Temperature\", \"status\": \"ACTIVE\", \"currentValue\": 21.0, \"roomId\": \"LIB-301\"}"
 ```
 
 ### 3.6 Get All Sensors Filtered by Type
 ```bash
-curl -X GET "http://localhost:8080/SmartCampusAPI/api/v1/sensors?type=CO2"
+curl -X GET "http://localhost:8080/api/v1/sensors?type=CO2"
 ```
 
 ### 3.7 Post a Sensor Reading (updates currentValue)
 ```bash
-curl -X POST http://localhost:8080/SmartCampusAPI/api/v1/sensors/TEMP-001/readings \
+curl -X POST http://localhost:8080/api/v1/sensors/TEMP-001/readings \
   -H "Content-Type: application/json" \
   -d "{\"value\": 23.7}"
 ```
 
 ### 3.8 Get Reading History for a Sensor
 ```bash
-curl -X GET http://localhost:8080/SmartCampusAPI/api/v1/sensors/TEMP-001/readings
+curl -X GET http://localhost:8080/api/v1/sensors/TEMP-001/readings
 ```
 
 ### 3.9 Attempt to Delete a Room with Sensors (triggers 409)
 ```bash
-curl -X DELETE http://localhost:8080/SmartCampusAPI/api/v1/rooms/LIB-301
+curl -X DELETE http://localhost:8080/api/v1/rooms/LIB-301
 ```
 
 ### 3.10 Delete an Empty Room (204 Success)
 ```bash
-curl -X DELETE http://localhost:8080/SmartCampusAPI/api/v1/rooms/SCI-202
+curl -X DELETE http://localhost:8080/api/v1/rooms/SCI-202
 ```
 
 ---
