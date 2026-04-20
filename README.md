@@ -89,55 +89,30 @@ You should see a JSON response with API metadata and resource links.
 curl -X GET http://localhost:8080/api/v1
 ```
 
-### 3.2 Get All Rooms
-```bash
-curl -X GET http://localhost:8080/api/v1/rooms
-```
-
-### 3.3 Create a New Room
+### 3.2 Create a New Room
 ```bash
 curl -X POST http://localhost:8080/api/v1/rooms \
   -H "Content-Type: application/json" \
   -d "{\"id\": \"SCI-202\", \"name\": \"Science Lab 202\", \"capacity\": 40}"
 ```
 
-### 3.4 Get a Specific Room
-```bash
-curl -X GET http://localhost:8080/api/v1/rooms/LIB-301
-```
-
-### 3.5 Register a New Sensor (with room validation)
+### 3.3 Register a New Sensor (with room validation)
 ```bash
 curl -X POST http://localhost:8080/api/v1/sensors \
   -H "Content-Type: application/json" \
   -d "{\"id\": \"TEMP-005\", \"type\": \"Temperature\", \"status\": \"ACTIVE\", \"currentValue\": 21.0, \"roomId\": \"LIB-301\"}"
 ```
 
-### 3.6 Get All Sensors Filtered by Type
-```bash
-curl -X GET "http://localhost:8080/api/v1/sensors?type=CO2"
-```
-
-### 3.7 Post a Sensor Reading (updates currentValue)
+### 3.4 Post a Sensor Reading (updates currentValue)
 ```bash
 curl -X POST http://localhost:8080/api/v1/sensors/TEMP-001/readings \
   -H "Content-Type: application/json" \
   -d "{\"value\": 23.7}"
 ```
 
-### 3.8 Get Reading History for a Sensor
-```bash
-curl -X GET http://localhost:8080/api/v1/sensors/TEMP-001/readings
-```
-
-### 3.9 Attempt to Delete a Room with Sensors (triggers 409)
+### 3.5 Attempt to Delete a Room with Sensors (triggers 409 Conflict)
 ```bash
 curl -X DELETE http://localhost:8080/api/v1/rooms/LIB-301
-```
-
-### 3.10 Delete an Empty Room (204 Success)
-```bash
-curl -X DELETE http://localhost:8080/api/v1/rooms/SCI-202
 ```
 
 ---
@@ -289,83 +264,3 @@ Using JAX-RS filters (implementing `ContainerRequestFilter` and `ContainerRespon
 4. **Maintainability** — If the logging format needs to change (e.g., adding a timestamp or request ID), we update one class instead of modifying every resource method across the entire application.
 
 5. **Cannot be forgotten** — New endpoints automatically get logging without any extra effort. A developer adding a new resource class does not need to remember to add logging statements — the filter handles it.
-
----
-
-## 5. Error Response Format
-
-All error responses follow a consistent JSON structure:
-
-```json
-{
-  "status": 409,
-  "error": "Conflict",
-  "message": "Room LIB-301 still has active sensors assigned to it."
-}
-```
-
-### Error Codes Summary
-
-| HTTP Status | Exception | Scenario |
-|-------------|-----------|----------|
-| 400 Bad Request | — | Missing required fields in request body |
-| 403 Forbidden | `SensorUnavailableException` | Posting a reading to a sensor in MAINTENANCE status |
-| 404 Not Found | — | Room or sensor ID does not exist |
-| 409 Conflict | `RoomNotEmptyException` | Deleting a room that still has sensors |
-| 415 Unsupported Media Type | — (JAX-RS built-in) | Sending non-JSON content type |
-| 422 Unprocessable Entity | `LinkedResourceNotFoundException` | Sensor references a non-existent roomId |
-| 500 Internal Server Error | `Throwable` (catch-all) | Any unexpected runtime error |
-
----
-
-## 6. Project Structure
-
-```
-SmartCampusAPI/
-├── pom.xml
-├── README.md
-├── STUDY_PLAN.md
-├── src/
-│   └── main/
-│       ├── java/com/smartcampus/
-│       │   ├── app/
-│       │   │   └── SmartCampusApplication.java
-│       │   ├── model/
-│       │   │   ├── Room.java
-│       │   │   ├── Sensor.java
-│       │   │   └── SensorReading.java
-│       │   ├── store/
-│       │   │   └── DataStore.java
-│       │   ├── resource/
-│       │   │   ├── DiscoveryResource.java
-│       │   │   ├── RoomResource.java
-│       │   │   ├── SensorResource.java
-│       │   │   └── SensorReadingResource.java
-│       │   ├── exception/
-│       │   │   ├── RoomNotEmptyException.java
-│       │   │   ├── LinkedResourceNotFoundException.java
-│       │   │   ├── SensorUnavailableException.java
-│       │   │   └── mappers/
-│       │   │       ├── RoomNotEmptyExceptionMapper.java
-│       │   │       ├── LinkedResourceNotFoundExceptionMapper.java
-│       │   │       ├── SensorUnavailableExceptionMapper.java
-│       │   │       └── GlobalExceptionMapper.java
-│       │   └── filter/
-│       │       └── LoggingFilter.java
-│       └── webapp/WEB-INF/
-│           └── web.xml
-```
-
----
-
-## 7. Technologies Used
-
-| Technology | Purpose |
-|------------|---------|
-| Java 17 | Programming language |
-| JAX-RS (Jersey 2.39.1) | RESTful API framework |
-| Jackson | JSON serialisation/deserialisation |
-| Apache Tomcat 9 | Servlet container |
-| Apache Maven | Build tool and dependency management |
-| ConcurrentHashMap | Thread-safe in-memory data storage |
-| Postman | API testing |
