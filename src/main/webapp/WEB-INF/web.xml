@@ -19,7 +19,7 @@
 
     <servlet-mapping>
         <servlet-name>SmartCampusAPI</servlet-name>
-        <url-pattern>/api/v1/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
 </web-app>
